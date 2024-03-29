@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import Button from 'react-bootstrap/Button';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { USER_DETAILS } from 'GraphQl/Queries/Queries';
+import { EVENT_DETAILS, USER_DETAILS } from 'GraphQl/Queries/Queries';
 import styles from './MemberDetail.module.css';
 import { languages } from 'utils/languages';
 import { UPDATE_USER_MUTATION } from 'GraphQl/Mutations/mutations';
@@ -12,13 +12,16 @@ import { errorHandler } from 'utils/errorHandler';
 import Loader from 'components/Loader/Loader';
 import useLocalStorage from 'utils/useLocalstorage';
 import Avatar from 'components/Avatar/Avatar';
+import Table from 'react-bootstrap/Table';
+import { Link } from 'react-router-dom';
+
 import {
   CalendarIcon,
   DatePicker,
   LocalizationProvider,
 } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { Form } from 'react-bootstrap';
+import { Accordion, Form } from 'react-bootstrap';
 import convertToBase64 from 'utils/convertToBase64';
 import sanitizeHtml from 'sanitize-html';
 import type { Dayjs } from 'dayjs';
@@ -30,6 +33,8 @@ import {
   employmentStatusEnum,
 } from 'utils/memberFields';
 import DynamicDropDown from 'components/DynamicDropDown/DynamicDropDown';
+import { Modal } from 'react-bootstrap';
+import { use } from 'i18next';
 
 type MemberDetailProps = {
   id?: string; // This is the userId
@@ -63,6 +68,16 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ id }): JSX.Element => {
     pluginCreationAllowed: false,
     adminApproved: false,
   });
+  // Handle attendance modal
+  const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
+  const toggleAttendanceModal = (): void => {
+    setIsAttendanceModalOpen(!isAttendanceModalOpen);
+  };
+
+  const pastEvents: any[] = [];
+  const upcomingEvents: any[] = [];
+  const ongoingEvents: any[] = [];
+
   // Handle date change
   const handleDateChange = (date: Dayjs | null): void => {
     if (date) {
@@ -146,6 +161,7 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ id }): JSX.Element => {
     }));
     // console.log(formState);
   };
+  const [fullName, setFullName] = useState('');
 
   const loginLink = async (): Promise<void> => {
     try {
@@ -211,7 +227,70 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ id }): JSX.Element => {
       img: ['src', 'alt'],
     },
   });
+  const registeredEvents = userData.user.registeredEvents;
 
+  registeredEvents.map((event: any, idx: number) => {
+    const eventStartDate = dayjs(event.startDate); // Convert event start date to dayjs object
+    const eventEndDate = dayjs(event.endDate); // Convert event end date to dayjs object
+    const currentDate = dayjs(); // Get current date
+
+    if (eventStartDate.isAfter(currentDate)) {
+      upcomingEvents.push(event);
+    } else if (eventEndDate.isBefore(currentDate)) {
+      pastEvents.push(event);
+    } else {
+      ongoingEvents.push(event);
+    }
+  });
+  // // if (userData === undefined) {
+  //   console.log("fetching now")
+
+  //   const {
+  //     data: memberDatao,
+  //     loading: memberLoadingo,
+  //     error: memberErroro,
+  //     refetch: memberRefetcho,
+  //   } = useQuery(EVENT_DETAILS, {
+  //     variables: {
+  //       id: userData.user.registeredEvents && userData.user.registeredEvents.length !== 0 ? userData.user.registeredEvents[0] : null,
+  //     },
+  //     skip: !userData.user.registeredEvents || userData.user.registeredEvents.length === 0,
+  //   });
+
+  //   useEffect(() => {
+  //     if (memberDatao) {
+  //       console.log(memberDatao, 'memberData');
+  //     }
+  //   }, [memberDatao]);
+  // // }
+
+  interface RegisteredEvent {
+    _id: string;
+    title: string;
+    description: string;
+    endDate: string;
+    startDate: string;
+    recurring: boolean;
+    location: string;
+    recurrance: string;
+  }
+  // const ye = () => {
+  //   console.log(userData.user.registeredEvents.filter((event: RegisteredEvent) => {
+  //     return event.title.includes("Club");
+  //   }))
+  // }
+  const ye = (e: any): void => {
+    /* istanbul ignore next */
+    if (e.key === 'Enter') {
+      console.log(
+        userData.user.registeredEvents.filter((event: RegisteredEvent) => {
+          return event.title
+            .toLocaleLowerCase()
+            .includes(fullName.toLocaleLowerCase());
+        }),
+      );
+    }
+  };
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className={`my-4 ${styles.mainpageright}`}>
@@ -538,6 +617,7 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ id }): JSX.Element => {
                 </div>
               </div>
             </div>
+
             <div className="buttons mt-4">
               <Button
                 type="button"
@@ -548,6 +628,245 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ id }): JSX.Element => {
                 {t('saveChanges')}
               </Button>
             </div>
+            {/* Event attendance Button */}
+            <div className="buttons mt-4">
+              <Button
+                type="button"
+                className={styles.greenregbtn}
+                value="attendance"
+                onClick={toggleAttendanceModal}
+              >
+                Event Attendance
+              </Button>
+            </div>
+
+            {/* Attendance Modal */}
+            <Modal
+              size="lg"
+              show={isAttendanceModalOpen}
+              onHide={toggleAttendanceModal}
+              centered
+            >
+              <Modal.Header>
+                <h5>Registered Events Attendance</h5>
+                {/* yaha pe name bhi daaloo */}
+                <Button variant="danger" onClick={toggleAttendanceModal}>
+                  <i className="fa fa-times"></i>
+                </Button>
+              </Modal.Header>
+              <br />
+
+              <Modal.Body>
+                {pastEvents.length === 0 ? (
+                  <div className="text-center">
+                    <p>No events registered</p>
+                    <div className="d-flex justify-content-center">
+                      <Form.Select
+                        className="me-3"
+                        aria-label="Default select example"
+                        style={{ width: 'auto' }}
+                      >
+                        <option value="1">Unity Foundation</option>
+                        <option value="2">Another</option>
+                        <option value="3">Some other</option>
+                      </Form.Select>
+                    </div>
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        console.log('clicked');
+                      }}
+                    >
+                      Register for an event
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <Form.Control
+                      type="name"
+                      id="searchLastName"
+                      placeholder="Search by event name"
+                      autoComplete="off"
+                      required
+                      className={styles.inputField}
+                      value={fullName}
+                      onChange={(e): void => {
+                        const { value } = e.target;
+                        setFullName(value);
+                        ye(value);
+                      }}
+                      onKeyUp={ye}
+                    />
+                    <Accordion defaultActiveKey="0">
+                      <Accordion.Item eventKey="0">
+                        <Accordion.Header>Past Events</Accordion.Header>
+                        <Accordion.Body>
+                          {pastEvents.length === 0 ? (
+                            <p className="text-center">No events registered</p>
+                          ) : (
+                            <Table striped bordered hover>
+                              <thead>
+                                <tr className="text-center">
+                                  <th>#</th>
+                                  <th>Title</th>
+                                  <th>Dates</th>
+                                  <th>Recurrence</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {pastEvents.map((event, idx) => (
+                                  <tr key={idx} className="text-center">
+                                    <td>{idx + 1}</td>
+                                    <td>
+                                      <Link to={`/event/${event._id}`}>
+                                        {event.title}
+                                      </Link>
+                                    </td>
+                                    <td>
+                                      {new Date(
+                                        event.startDate,
+                                      ).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                      })}{' '}
+                                      to{' '}
+                                      {new Date(
+                                        event.endDate,
+                                      ).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                      })}
+                                    </td>
+                                    <td>
+                                      {event.recurrance
+                                        ? `Repeats ${event.recurrance.toLowerCase()}`
+                                        : 'One time event'}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </Table>
+                          )}
+                        </Accordion.Body>
+                      </Accordion.Item>
+
+                      <Accordion.Item eventKey="1">
+                        <Accordion.Header>Upcoming Events</Accordion.Header>
+                        <Accordion.Body>
+                          {upcomingEvents.length === 0 ? (
+                            <p className="text-center">No events registered</p>
+                          ) : (
+                            <Table striped bordered hover>
+                              <thead>
+                                <tr className="text-center">
+                                  <th>#</th>
+                                  <th>Title</th>
+                                  <th>Dates</th>
+                                  <th>Recurrence</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {upcomingEvents.map((event, idx) => (
+                                  <tr key={idx} className="text-center">
+                                    <td>{idx + 1}</td>
+                                    <td>
+                                      <Link to={`/event/${event._id}`}>
+                                        {event.title}
+                                      </Link>
+                                    </td>
+                                    <td>
+                                      {new Date(
+                                        event.startDate,
+                                      ).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                      })}{' '}
+                                      to{' '}
+                                      {new Date(
+                                        event.endDate,
+                                      ).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                      })}
+                                    </td>
+                                    <td>
+                                      {event.recurrance
+                                        ? `Repeats ${event.recurrance.toLowerCase()}`
+                                        : 'One time event'}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </Table>
+                          )}
+                        </Accordion.Body>
+                      </Accordion.Item>
+                      <Accordion.Item eventKey="2">
+                        <Accordion.Header>Ongoing Events</Accordion.Header>
+                        <Accordion.Body>
+                          {ongoingEvents.length === 0 ? (
+                            <p className="text-center">No events registered</p>
+                          ) : (
+                            <Table striped bordered hover>
+                              <thead>
+                                <tr className="text-center">
+                                  <th>#</th>
+                                  <th>Title</th>
+                                  <th>Dates</th>
+                                  <th>Recurrence</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {ongoingEvents.map((event, idx) => (
+                                  <tr key={idx} className="text-center">
+                                    <td>{idx + 1}</td>
+                                    <td>
+                                      <Link to={`/event/${event._id}`}>
+                                        {event.title}
+                                      </Link>
+                                    </td>
+                                    <td>
+                                      {new Date(
+                                        event.startDate,
+                                      ).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                      })}{' '}
+                                      to{' '}
+                                      {new Date(
+                                        event.endDate,
+                                      ).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                      })}
+                                    </td>
+                                    <td>
+                                      {event.recurrance
+                                        ? `Repeats ${event.recurrance.toLowerCase()}`
+                                        : 'One time event'}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </Table>
+                          )}
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    </Accordion>
+                  </>
+                )}
+
+                <Button variant="danger" onClick={toggleAttendanceModal}>
+                  Close
+                </Button>
+              </Modal.Body>
+            </Modal>
           </div>
         </div>
       </div>

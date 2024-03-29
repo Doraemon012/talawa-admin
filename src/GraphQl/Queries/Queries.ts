@@ -228,6 +228,7 @@ export const USER_LIST_REQUEST = gql`
     }
   }
 `;
+// add a _id field to the user object
 
 export const EVENT_DETAILS = gql`
   query Event($id: ID!) {
@@ -255,7 +256,86 @@ export const EVENT_DETAILS = gql`
     }
   }
 `;
+export const DETAILED_EVENT_DETAILS = gql`
+  query Event($id: ID!) {
+    event(id: $id) {
+      _id
+      title
+      description
+      startDate
+      endDate
+      startTime
+      endTime
+      allDay
+      location
+      organization {
+        _id
+        members {
+          _id
+          firstName
+          lastName
+        }
+      }
+      attendees {
+        _id
+        firstName
+        lastName
+      }
+      recurring
+      recurrance
+      recurrenceRule {
+        frequency
+        weekDays
+        interval
+        count
+        weekDayOccurenceInMonth
+      }
+      isPublic
+      isRegisterable
+      status
+      agendaItems {
+        _id
+        title
+        description
+        duration
+        urls
+      }
 
+      attendeesCheckInStatus {
+        _id
+        user {
+          _id
+          firstName
+          lastName
+        }
+      }
+      actionItems {
+        _id
+        assignee {
+          firstName
+          _id
+          lastName
+        }
+        assigner {
+          _id
+          firstName
+          lastName
+        }
+        actionItemCategory {
+          _id
+          name
+          isDisabled
+        }
+        dueDate
+        assignmentDate
+        isCompleted
+        completionDate
+        preCompletionNotes
+        postCompletionNotes
+      }
+    }
+  }
+`;
 export const EVENT_ATTENDEES = gql`
   query Event($id: ID!) {
     event(id: $id) {
@@ -430,6 +510,9 @@ export const ORGANIZATIONS_MEMBER_CONNECTION_LIST = gql`
         image
         email
         createdAt
+        registeredEvents {
+          _id
+        }
       }
     }
   }
@@ -479,6 +562,13 @@ export const USER_DETAILS = gql`
         }
         registeredEvents {
           _id
+          title
+          description
+          endDate
+          startDate
+          recurring
+          location
+          recurrance
         }
         membershipRequests {
           _id

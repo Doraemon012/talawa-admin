@@ -12,6 +12,9 @@ import { errorHandler } from 'utils/errorHandler';
 interface InterfaceOrgPeopleListCardProps {
   key: number;
   id: string;
+  firstName: string;
+  lastName: string;
+  // registeredEvents:;
 }
 
 function orgPeopleListCard(
@@ -20,9 +23,12 @@ function orgPeopleListCard(
   const { orgId: currentUrl } = useParams();
   const [remove] = useMutation(REMOVE_MEMBER_MUTATION);
   const [showRemoveAdminModal, setShowRemoveAdminModal] = React.useState(false);
+  const [showEventAttendenceModal, setShowEventAttendenceModal] = React.useState(false);
 
   const toggleRemoveAdminModal = (): void =>
     setShowRemoveAdminModal(!showRemoveAdminModal);
+  const toggleEventAttendenceModal = (): void =>
+  setShowEventAttendenceModal(!showEventAttendenceModal);
 
   const { t } = useTranslation('translation', {
     keyPrefix: 'orgPeopleListCard',
@@ -49,6 +55,7 @@ function orgPeopleListCard(
       errorHandler(t, error);
     }
   };
+  console.log('props', props);
   return (
     <div>
       <Button
@@ -57,6 +64,13 @@ function orgPeopleListCard(
         onClick={toggleRemoveAdminModal}
       >
         {t('remove')}
+      </Button>
+      <Button
+        className={styles.memberfontcreatedbtn}
+        data-testid="event-attendence-button"
+        onClick={toggleEventAttendenceModal}
+      >
+        Event Attendence
       </Button>
       <hr></hr>
       <Modal show={showRemoveAdminModal} onHide={toggleRemoveAdminModal}>
@@ -69,6 +83,28 @@ function orgPeopleListCard(
         <Modal.Body>{t('removeMemberMsg')}</Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={toggleRemoveAdminModal}>
+            {t('no')}
+          </Button>
+          <Button
+            type="button"
+            className="btn btn-success"
+            onClick={removeMember}
+            data-testid="removeMemberBtn"
+          >
+            {t('yes')}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showEventAttendenceModal} onHide={toggleEventAttendenceModal}>
+        <Modal.Header>
+          <h5>{props.firstName} {props.lastName}'s Attended Events</h5>
+          <Button variant="danger" onClick={toggleEventAttendenceModal}>
+            <i className="fa fa-times"></i>
+          </Button>
+        </Modal.Header>
+        <Modal.Body>{t('removeMemberMsg')}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={toggleEventAttendenceModal}>
             {t('no')}
           </Button>
           <Button

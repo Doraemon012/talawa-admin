@@ -125,6 +125,20 @@ const leftDrawerEvent = ({
             </div>
             All Events
           </Button>
+          <Button
+            variant="light"
+            data-testid="allEventsBtn"
+            className="text-secondary"
+            aria-label="allEvents"
+            onClick={(): void => {
+              navigate(`/eventAttendence/${event._id}`);
+            }}
+          >
+            <div className={styles.iconWrapper}>
+              <IconComponent name="Events" fill="var(--bs-secondary)" />
+            </div>
+            Attendence
+          </Button>
         </div>
 
         {/* Profile Section & Logout Btn */}

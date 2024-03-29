@@ -40,8 +40,9 @@ import { CHECK_AUTH } from 'GraphQl/Queries/Queries';
 import Advertisements from 'components/Advertisements/Advertisements';
 import SecuredRouteForUser from 'components/UserPortal/SecuredRouteForUser/SecuredRouteForUser';
 import FundCampaignPledge from 'screens/FundCampaignPledge/FundCampaignPledge';
-
+import AttendencePage from 'screens/AttendencePage/AttendencePage';
 import useLocalStorage from 'utils/useLocalstorage';
+import { LeftDrawerEventWrapper } from 'components/LeftDrawerEvent/LeftDrawerEventWrapper';
 
 const { setItem } = useLocalStorage();
 
@@ -139,7 +140,9 @@ function app(): JSX.Element {
             {extraRoutes}
           </Route>
         </Route>
+        
         <Route path="/event/:eventId" element={<EventDashboard />} />
+        <Route path="/eventAttendence/:eventId" element={<AttendencePage />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         {/* User Portal Routes */}
         <Route element={<SecuredRouteForUser />}>

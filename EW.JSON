@@ -1,0 +1,116 @@
+{
+    "__typename": "Event",
+    "_id": "6604f839839d72252d2ba404",
+    "title": "Event",
+    "description": "Oh my event",
+    "startDate": "2024-03-28",
+    "endDate": "2024-03-28",
+    "startTime": null,
+    "endTime": null,
+    "allDay": true,
+    "location": "geelong",
+    "organization": {
+      "__typename": "Organization",
+      "_id": "6637904485008f171cf29924"
+    },
+    "attendees": [
+      {
+        "__typename": "User",
+        "_id": "64378abd85008f171cf2990d",
+        "firstName": "Wilt",
+        "lastName": "Shepherd"
+      },
+      {
+        "__typename": "User",
+        "_id": "6589386a2caa9d8d69087484",
+        "firstName": "Bruce",
+        "lastName": "Garza"
+      },
+      {
+        "__typename": "User",
+        "_id": "6589388b2caa9d8d69087486",
+        "firstName": "Jeramy",
+        "lastName": "Garcia"
+      },
+      {
+        "__typename": "User",
+        "_id": "658938ba2caa9d8d6908748a",
+        "firstName": "Peggy",
+        "lastName": "Bowers"
+      },
+      {
+        "__typename": "User",
+        "_id": "66378abd85008f171cf2990d",
+        "firstName": "Loyd",
+        "lastName": "Solomon"
+      }
+    ],
+    "recurring": true,
+    "recurrance": "ONCE",
+    "recurrenceRule": {
+      "__typename": "RecurrenceRule",
+      "frequency": "WEEKLY",
+      "weekDays": [
+        "THURSDAY"
+      ],
+      "interval": 1,
+      "count": null,
+      "weekDayOccurenceInMonth": null
+    },
+    "isPublic": true,
+    "isRegisterable": true,
+    "status": "ACTIVE",
+    "agendaItems": null,
+    "attendeesCheckInStatus": [
+      {
+        "__typename": "CheckInStatus",
+        "_id": "6604f839839d72252d2ba406",
+        "user": {
+          "__typename": "User",
+          "_id": "64378abd85008f171cf2990d",
+          "firstName": "Wilt",
+          "lastName": "Shepherd"
+        }
+      },
+      {
+        "__typename": "CheckInStatus",
+        "_id": "6604f8e2839d72252d2ba621",
+        "user": {
+          "__typename": "User",
+          "_id": "6589386a2caa9d8d69087484",
+          "firstName": "Bruce",
+          "lastName": "Garza"
+        }
+      },
+      {
+        "__typename": "CheckInStatus",
+        "_id": "6604f8e3839d72252d2ba638",
+        "user": {
+          "__typename": "User",
+          "_id": "6589388b2caa9d8d69087486",
+          "firstName": "Jeramy",
+          "lastName": "Garcia"
+        }
+      },
+      {
+        "__typename": "CheckInStatus",
+        "_id": "6604f8e7839d72252d2ba64f",
+        "user": {
+          "__typename": "User",
+          "_id": "658938ba2caa9d8d6908748a",
+          "firstName": "Peggy",
+          "lastName": "Bowers"
+        }
+      },
+      {
+        "__typename": "CheckInStatus",
+        "_id": "6604fa32c9ed84699a706733",
+        "user": {
+          "__typename": "User",
+          "_id": "66378abd85008f171cf2990d",
+          "firstName": "Loyd",
+          "lastName": "Solomon"
+        }
+      }
+    ]
+  }

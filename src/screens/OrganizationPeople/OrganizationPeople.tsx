@@ -322,6 +322,8 @@ function organizationPeople(): JSX.Element {
                                   <OrgPeopleListCard
                                     key={index}
                                     id={datas._id}
+                                    firstName={datas.firstName}
+                                    lastName={datas.lastName}
                                   />
                                 </StyledTableCell>
                               </StyledTableRow>

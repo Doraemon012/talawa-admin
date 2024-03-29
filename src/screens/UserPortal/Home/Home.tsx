@@ -117,7 +117,8 @@ export default function home(): JSX.Element {
   useEffect(() => {
     if (data) {
       setPosts(data.organizations[0].posts.edges);
-    }
+    };
+    console.log(data);
   }, [data]);
 
   useEffect(() => {
