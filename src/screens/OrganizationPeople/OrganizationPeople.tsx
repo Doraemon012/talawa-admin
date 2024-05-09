@@ -6,8 +6,6 @@ import {
   USER_LIST_FOR_TABLE,
 } from 'GraphQl/Queries/Queries';
 import Loader from 'components/Loader/Loader';
-import OrgAdminListCard from 'components/OrgAdminListCard/OrgAdminListCard';
-import OrgPeopleListCard from 'components/OrgPeopleListCard/OrgPeopleListCard';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { Button, Dropdown, Form } from 'react-bootstrap';
@@ -43,26 +41,6 @@ function organizationPeople(): JSX.Element {
   const [adminFilteredData, setAdminFilteredData] = useState();
 
   const [userName, setUserName] = useState('');
-  const [showRemoveModal, setShowRemoveModal] = React.useState(false);
-  const [selectedAdminId, setSelectedAdminId] = React.useState<
-    string | undefined
-  >();
-  const [selectedMemId, setSelectedMemId] = React.useState<
-    string | undefined
-  >();
-  const toggleRemoveModal = (): void => {
-    setShowRemoveModal((prev) => !prev);
-  };
-  const toggleRemoveMemberModal = (id: string): void => {
-    setSelectedMemId(id);
-    setSelectedAdminId(undefined);
-    toggleRemoveModal();
-  };
-  const toggleRemoveAdminModal = (id: string): void => {
-    setSelectedAdminId(id);
-    setSelectedMemId(undefined);
-    toggleRemoveModal();
-  };
 
   const {
     data: memberData,
@@ -203,15 +181,7 @@ function organizationPeople(): JSX.Element {
       headerClassName: `${styles.tableHeader}`,
       sortable: false,
       renderCell: (params: GridCellParams) => {
-        return (
-          <Link
-            to={`/member/${currentUrl}`}
-            state={{ id: params.row._id }}
-            className={styles.membername}
-          >
-            {params.row?.firstName + ' ' + params.row?.lastName}
-          </Link>
-        );
+        return <div>{params.row?.firstName + ' ' + params.row?.lastName}</div>;
       },
     },
     {
@@ -235,33 +205,6 @@ function organizationPeople(): JSX.Element {
       sortable: false,
       renderCell: (params: GridCellParams) => {
         return dayjs(params.row.createdAt).format('DD/MM/YYYY');
-      },
-    },
-    {
-      field: 'action',
-      headerName: 'Action',
-      flex: 1,
-      minWidth: 100,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: `${styles.tableHeader}`,
-      sortable: false,
-      renderCell: (params: GridCellParams) => {
-        return state === 1 ? (
-          <Button
-            onClick={() => toggleRemoveAdminModal(params.row._id)}
-            data-testid="removeAdminModalBtn"
-          >
-            Remove
-          </Button>
-        ) : (
-          <Button
-            onClick={() => toggleRemoveMemberModal(params.row._id)}
-            data-testid="removeMemberModalBtn"
-          >
-            Remove
-          </Button>
-        );
       },
     },
   ];
@@ -356,64 +299,54 @@ function organizationPeople(): JSX.Element {
       {((state == 0 && memberData) ||
         (state == 1 && adminFilteredData) ||
         (state == 2 && usersData)) && (
-        <div className="datatable">
-          <DataGrid
-            disableColumnMenu
-            columnBuffer={5}
-            hideFooter={true}
-            className={`${styles.datagrid}`}
-            getRowId={(row) => row._id}
-            components={{
-              NoRowsOverlay: () => (
-                <Stack
-                  height="100%"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  Nothing Found !!
-                </Stack>
-              ),
-            }}
-            sx={{
-              '&.MuiDataGrid-root .MuiDataGrid-cell:focus-within': {
-                outline: 'none !important',
-              },
-              '&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within': {
-                outline: 'none',
-              },
-              '& .MuiDataGrid-row:hover': {
-                backgroundColor: 'transparent',
-              },
-              '& .MuiDataGrid-row.Mui-hovered': {
-                backgroundColor: 'transparent',
-              },
-            }}
-            getRowClassName={() => `${styles.rowBackground}`}
-            autoHeight
-            rowHeight={70}
-            rows={
-              state === 0
-                ? memberData.organizationsMemberConnection.edges
-                : state === 1
-                  ? adminFilteredData
-                  : convertObject(usersData)
-            }
-            columns={columns}
-            isRowSelectable={() => false}
-          />
-        </div>
-      )}
-      {showRemoveModal && selectedMemId && (
-        <OrgPeopleListCard
-          id={selectedMemId}
-          toggleRemoveModal={toggleRemoveModal}
-        />
-      )}
-      {showRemoveModal && selectedAdminId && (
-        <OrgAdminListCard
-          id={selectedAdminId}
-          toggleRemoveModal={toggleRemoveModal}
-        />
+        <Link to={`/member/${currentUrl}`} className={styles.membername}>
+          <div className="datatable">
+            <DataGrid
+              disableColumnMenu
+              columnBuffer={5}
+              hideFooter={true}
+              className={`${styles.datagrid}`}
+              getRowId={(row) => row._id}
+              components={{
+                NoRowsOverlay: () => (
+                  <Stack
+                    height="100%"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    Nothing Found !!
+                  </Stack>
+                ),
+              }}
+              sx={{
+                '&.MuiDataGrid-root .MuiDataGrid-cell:focus-within': {
+                  outline: 'none !important',
+                },
+                '&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within': {
+                  outline: 'none',
+                },
+                '& .MuiDataGrid-row:hover': {
+                  backgroundColor: 'transparent',
+                },
+                '& .MuiDataGrid-row.Mui-hovered': {
+                  backgroundColor: 'transparent',
+                },
+              }}
+              getRowClassName={() => `${styles.rowBackground}`}
+              autoHeight
+              rowHeight={70}
+              rows={
+                state === 0
+                  ? memberData.organizationsMemberConnection.edges
+                  : state === 1
+                    ? adminFilteredData
+                    : convertObject(usersData)
+              }
+              columns={columns}
+              isRowSelectable={() => false}
+            />
+          </div>
+        </Link>
       )}
     </>
   );
