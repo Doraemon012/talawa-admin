@@ -73,11 +73,18 @@ const VenueModal = ({
 
   // State to manage image preview and form data
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  // const [formState, setFormState] = useState({
+  //   name: venueData?.name || '',
+  //   description: venueData?.description || '',
+  //   capacity: venueData?.capacity || '',
+  //   objectName: venueData?.image || '',
+  // });
   const [formState, setFormState] = useState({
     name: venueData?.name || '',
     description: venueData?.description || '',
     capacity: venueData?.capacity || '',
     objectName: venueData?.image || '',
+    mimeType: '', // New field for mimeType
   });
 
   // Reference for the file input element
@@ -96,94 +103,51 @@ const VenueModal = ({
    *
    * @returns A promise that resolves when the submission is complete.
    */
-  // Update the handleSubmit function in VenueModal.tsx
 
   const handleSubmit = useCallback(async () => {
-    // Validate name
     if (formState.name.trim().length === 0) {
       toast.error(t('venueTitleError') as string);
       return;
     }
 
-    // Only validate name uniqueness if it has changed
-    if (edit && formState.name.trim() === venueData?.name) {
-      // If name hasn't changed, only update other fields
-      const variables = {
-        id: venueData._id,
-        capacity: parseInt(formState.capacity, 10),
-        description: formState.description?.trim() || '',
-        file: formState.objectName || '',
-        // Don't include name if it hasn't changed
-      };
-      try {
-        const result = await mutate({ variables });
-
-        if (result?.data?.editVenue) {
-          toast.success(t('venueUpdated'));
-          refetchVenues();
-          onHide();
-        }
-      } catch (error) {
-        console.error('Mutation error:', error);
-        errorHandler(t, error);
-      }
-      return;
-    }
-
-    // Validate capacity
     const capacityNum = parseInt(formState.capacity, 10);
     if (Number.isNaN(capacityNum) || capacityNum <= 0) {
       toast.error(t('venueCapacityError') as string);
       return;
     }
 
+    const input: any = {
+      name: formState.name.trim(),
+      description: formState.description?.trim() || '',
+      capacity: capacityNum,
+    };
+    // organizationId: orgId,
+
+    if (edit && venueData?.id) {
+      input.id = venueData.id; // Include the venue ID for updates
+    }
+    if (!edit) {
+      input.organizationId = orgId;
+    }
+
+    console.log(input);
+
     try {
-      if (edit && venueData?._id) {
-        // If name has changed, include all fields
-        const variables = {
-          id: venueData._id,
-          name: formState.name.trim(),
-          capacity: capacityNum,
-          description: formState.description?.trim() || '',
-          file: formState.objectName || '',
-        };
+      const result = await mutate({
+        mutation: edit ? UPDATE_VENUE_MUTATION : CREATE_VENUE_MUTATION,
+        variables: { input },
+      });
 
-        const result = await mutate({ variables });
-
-        if (result?.data?.editVenue) {
-          toast.success(t('venueUpdated'));
-          refetchVenues();
-          onHide();
-        }
-      } else {
-        // Create venue case
-        const variables = {
-          name: formState.name.trim(),
-          capacity: capacityNum,
-          description: formState.description?.trim() || '',
-          file: formState.objectName || '',
-          organizationId: orgId,
-        };
-
-        const result = await mutate({ variables });
-
-        if (result?.data?.createVenue) {
-          toast.success(t('venueCreated'));
-          refetchVenues();
-          onHide();
-        }
+      if (edit ? result?.data?.updateVenue : result?.data?.createVenue) {
+        toast.success(t(edit ? 'venueUpdated' : 'venueCreated'));
+        refetchVenues();
+        onHide();
       }
     } catch (error) {
       console.error('Mutation error:', error);
-      if (error instanceof Error && error.message.includes('alreadyExists')) {
-        toast.error(
-          t('venueNameExists') || 'A venue with this name already exists',
-        );
-      } else {
-        errorHandler(t, error);
-      }
+      errorHandler(t, error);
     }
-  }, [formState, mutate, onHide, refetchVenues, t, venueData, edit, orgId]);
+  }, [formState, onHide, refetchVenues, t, venueData, orgId, edit]);
 
   /**
    * Clears the selected image and resets the image preview.
@@ -201,10 +165,11 @@ const VenueModal = ({
   // Update form state when venueData changes
   useEffect(() => {
     setFormState({
-      name: venueData?.name || '', // Prefill name or set as empty
-      description: venueData?.description || '', // Prefill description
-      capacity: venueData?.capacity?.toString() || '', // Prefill capacity as a string
-      objectName: venueData?.image || '', // Prefill image
+      name: venueData?.name || '',
+      description: venueData?.description || '',
+      capacity: venueData?.capacity || '',
+      objectName: venueData?.image || '',
+      mimeType: '', // Reset mimeType when venueData changes
     });
 
     if (venueData?.image) {
@@ -309,15 +274,21 @@ const VenueModal = ({
                   return;
                 }
                 try {
-                  const { objectName } = await uploadFileToMinio(
-                    file,
-                    'organizations',
-                  );
-                  setFormState({ ...formState, objectName });
+                  const { objectName } = await uploadFileToMinio(file, orgId);
+                  setFormState({
+                    ...formState,
+                    objectName,
+                    mimeType: file.type, // Set mimeType
+                  });
                   const previewUrl = URL.createObjectURL(file);
                   setImagePreviewUrl(previewUrl);
                 } catch (error) {
                   toast.error('Failed to upload image');
+                  setFormState({
+                    ...formState,
+                    objectName: 'a',
+                    mimeType: 'gif', // Reset mimeType on error
+                  });
                 }
               }
             }}

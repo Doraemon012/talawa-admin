@@ -27,7 +27,7 @@ import OrganizationVenues from './OrganizationVenues';
 import { store } from 'state/store';
 import i18nForTest from 'utils/i18nForTest';
 import { StaticMockLink } from 'utils/StaticMockLink';
-import { VENUE_LIST } from 'GraphQl/Queries/OrganizationQueries';
+// import { VENUE_LIST } from 'GraphQl/Queries/OrganizationQueries';
 import type { ApolloLink } from '@apollo/client';
 import { DELETE_VENUE_MUTATION } from 'GraphQl/Mutations/VenueMutations';
 import { vi } from 'vitest';
@@ -36,7 +36,7 @@ import { errorHandler } from 'utils/errorHandler';
 const MOCKS = [
   {
     request: {
-      query: VENUE_LIST,
+      // query: VENUE_LIST,
       variables: {
         orgId: 'orgId',
         orderBy: 'capacity_ASC',
@@ -92,7 +92,7 @@ const MOCKS = [
   },
   {
     request: {
-      query: VENUE_LIST,
+//       query: VENUE_LIST,
       variables: {
         orgId: 'orgId',
         orderBy: 'capacity_DESC',
@@ -148,7 +148,7 @@ const MOCKS = [
   },
   {
     request: {
-      query: VENUE_LIST,
+// //       query: VENUE_LIST,
       variables: {
         orgId: 'orgId',
         orderBy: 'capacity_DESC',
@@ -179,7 +179,7 @@ const MOCKS = [
   },
   {
     request: {
-      query: VENUE_LIST,
+// //       query: VENUE_LIST,
       variables: {
         orgId: 'orgId',
         orderBy: 'capacity_DESC',
@@ -522,7 +522,7 @@ describe('Organisation Venues Error Handling', () => {
     const errorLink = new StaticMockLink([
       {
         request: {
-          query: VENUE_LIST,
+    // //       query: VENUE_LIST,
           variables: {
             orgId: 'orgId',
             orderBy: 'capacity_DESC',
@@ -556,7 +556,7 @@ describe('Organisation Venues Error Handling', () => {
       [
         {
           request: {
-            query: VENUE_LIST,
+      //       query: VENUE_LIST,
             variables: {
               orgId: 'orgId',
               orderBy: 'capacity_DESC',

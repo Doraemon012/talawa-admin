@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 
 export const MOCK_VENUE_ITEM = {
-  _id: '1',
+  id: '1',
   name: 'Grand Hall',
   image: null,
   capacity: '500',
@@ -9,7 +9,7 @@ export const MOCK_VENUE_ITEM = {
 };
 
 export const MOCK_VENUE_ITEM_WITH_IMAGE = {
-  _id: '2',
+  id: '2',
   name: 'Conference Room',
   image: 'https://surl.li/odyiad',
   capacity: '200',
@@ -17,7 +17,7 @@ export const MOCK_VENUE_ITEM_WITH_IMAGE = {
 };
 
 export const MOCK_VENUE_ITEM_LONG_TEXT = {
-  _id: '4',
+  id: '4',
   name: 'This is a very long venue name that should definitely be truncated in the display',
   image: null,
   capacity: '300',

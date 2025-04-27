@@ -52,7 +52,7 @@ import styles from 'style/app-fixed.module.css';
 import { errorHandler } from 'utils/errorHandler';
 import { useMutation, useQuery } from '@apollo/client';
 import Col from 'react-bootstrap/Col';
-import { VENUE_LIST } from 'GraphQl/Queries/OrganizationQueries';
+import { VENUE_QUERY } from 'GraphQl/Queries/OrganizationQueries';
 import Loader from 'components/Loader/Loader';
 import { Navigate, useParams } from 'react-router-dom';
 import VenueModal from 'components/Venues/Modal/VenueModal';
@@ -90,22 +90,33 @@ function organizationVenues(): JSX.Element {
     return <Navigate to="/orglist" />;
   }
 
-  // GraphQL query for fetching venue data
   const {
     data: venueData,
     loading: venueLoading,
     error: venueError,
     refetch: venueRefetch,
-  } = useQuery(VENUE_LIST, {
+  } = useQuery(VENUE_QUERY, {
     variables: {
-      orgId: orgId,
-      orderBy: sortOrder === 'highest' ? 'capacity_DESC' : 'capacity_ASC',
-      where: {
-        name_starts_with: searchBy === 'name' ? searchTerm : undefined,
-        description_starts_with: searchBy === 'desc' ? searchTerm : undefined,
+      input: {
+        organizationId: orgId, // Use the correct field name
+        where: {
+          [searchBy === 'name' ? 'name_contains' : 'description_contains']:
+            searchTerm || undefined,
+        },
+        orderBy: {
+          field: 'capacity', // Adjust the field to match your schema
+          direction: sortOrder === 'highest' ? 'DESC' : 'ASC',
+        },
       },
     },
   });
+
+  console.log(venueData);
+
+  // Example usage
+  // const { data } = useQuery<{ venues: Venue[] }>(VENUE_LIST, {
+  //   variables: { orgId: 'organizationId' },
+  // });
 
   // GraphQL mutation for deleting a venue
   const [deleteVenue] = useMutation(DELETE_VENUE_MUTATION);
@@ -116,7 +127,14 @@ function organizationVenues(): JSX.Element {
    */
   const handleDelete = async (venueId: string): Promise<void> => {
     try {
-      await deleteVenue({ variables: { id: venueId } });
+      const variables = {
+        input: {
+          id: venueId,
+        },
+      };
+
+      console.log('called delete with', venueId);
+      await deleteVenue({ variables });
       venueRefetch();
     } catch (error) {
       errorHandler(t, error);
@@ -179,9 +197,15 @@ function organizationVenues(): JSX.Element {
   }
 
   // Updating venues state when venue data changes
+  // useEffect(() => {
+  //   if (venueData && venueData.getVenueByOrgId) {
+  //     setVenues(venueData.getVenueByOrgId);
+  //   }
+  // }, [venueData]);
+
   useEffect(() => {
-    if (venueData && venueData.getVenueByOrgId) {
-      setVenues(venueData.getVenueByOrgId);
+    if (venueData && venueData.venuesByOrganizationId) {
+      setVenues(venueData.venuesByOrganizationId);
     }
   }, [venueData]);
 
@@ -265,8 +289,8 @@ function organizationVenues(): JSX.Element {
         onHide={toggleVenueModal}
         refetchVenues={venueRefetch}
         orgId={orgId}
-        edit={venueModalMode === 'edit' ? true : false}
-        venueData={editVenueData}
+        edit={venueModalMode === 'edit'} // Pass true for edit mode
+        venueData={editVenueData} // Pass the venue data to edit
       />
     </>
   );

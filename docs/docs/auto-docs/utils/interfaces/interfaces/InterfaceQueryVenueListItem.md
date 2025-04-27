@@ -8,14 +8,6 @@ Defined in: [src/utils/interfaces.ts:1139](https://github.com/PalisadoesFoundati
 
 ## Properties
 
-### \_id
-
-> **\_id**: `string`
-
-Defined in: [src/utils/interfaces.ts:1140](https://github.com/PalisadoesFoundation/talawa-admin/blob/main/src/utils/interfaces.ts#L1140)
-
-***
-
 ### capacity
 
 > **capacity**: `string`
@@ -29,6 +21,14 @@ Defined in: [src/utils/interfaces.ts:1144](https://github.com/PalisadoesFoundati
 > **description**: `string`
 
 Defined in: [src/utils/interfaces.ts:1142](https://github.com/PalisadoesFoundation/talawa-admin/blob/main/src/utils/interfaces.ts#L1142)
+
+***
+
+### id
+
+> **id**: `string`
+
+Defined in: [src/utils/interfaces.ts:1140](https://github.com/PalisadoesFoundation/talawa-admin/blob/main/src/utils/interfaces.ts#L1140)
 
 ***
 

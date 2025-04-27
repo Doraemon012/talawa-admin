@@ -10,10 +10,6 @@ Defined in: [src/components/Venues/VenueCardMocks.ts:19](https://github.com/Pali
 
 ## Type declaration
 
-### \_id
-
-> **\_id**: `string` = `'4'`
-
 ### capacity
 
 > **capacity**: `string` = `'300'`
@@ -21,6 +17,10 @@ Defined in: [src/components/Venues/VenueCardMocks.ts:19](https://github.com/Pali
 ### description
 
 > **description**: `string` = `'This is a very long description that should be truncated. It contains more than seventy five characters to ensure we can test the truncation logic properly. This text will be cut off.'`
+
+### id
+
+> **id**: `string` = `'4'`
 
 ### image
 

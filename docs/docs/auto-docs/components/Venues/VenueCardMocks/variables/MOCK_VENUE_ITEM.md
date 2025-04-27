@@ -10,10 +10,6 @@ Defined in: [src/components/Venues/VenueCardMocks.ts:3](https://github.com/Palis
 
 ## Type declaration
 
-### \_id
-
-> **\_id**: `string` = `'1'`
-
 ### capacity
 
 > **capacity**: `string` = `'500'`
@@ -21,6 +17,10 @@ Defined in: [src/components/Venues/VenueCardMocks.ts:3](https://github.com/Palis
 ### description
 
 > **description**: `string` = `'A spacious venue for large events and gatherings.'`
+
+### id
+
+> **id**: `string` = `'1'`
 
 ### image
 

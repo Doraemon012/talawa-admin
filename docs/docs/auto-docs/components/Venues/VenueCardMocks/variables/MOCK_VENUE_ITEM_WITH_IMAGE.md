@@ -10,10 +10,6 @@ Defined in: [src/components/Venues/VenueCardMocks.ts:11](https://github.com/Pali
 
 ## Type declaration
 
-### \_id
-
-> **\_id**: `string` = `'2'`
-
 ### capacity
 
 > **capacity**: `string` = `'200'`
@@ -21,6 +17,10 @@ Defined in: [src/components/Venues/VenueCardMocks.ts:11](https://github.com/Pali
 ### description
 
 > **description**: `string` = `'A modern conference room with all amenities.'`
+
+### id
+
+> **id**: `string` = `'2'`
 
 ### image
 

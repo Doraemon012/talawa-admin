@@ -368,26 +368,38 @@ export const ORGANIZATION_FUNDS = gql`
  * @param id - The ID of the organization for which venues are being retrieved.
  * @returns The list of venues associated with the organization.
  */
-export const VENUE_LIST = gql`
-  query GetVenueByOrgId(
-    $orgId: ID!
-    $first: Int
-    $orderBy: VenueOrderByInput
-    $where: VenueWhereInput
-  ) {
-    getVenueByOrgId(
-      orgId: $orgId
-      first: $first
-      orderBy: $orderBy
-      where: $where
-    ) {
-      _id
-      capacity
+
+// export const VENUE_LIST = gql`
+//   query GetVenue($input: QueryVenueInput!) {
+//     venue(input: $input) {
+//       id
+//       name
+//       description
+//       capacity
+//       organization {
+//         id
+//         countryCode
+//       }
+//       attachments {
+//         id
+//         mimeType
+//         url
+//       }
+//     }
+//   }
+// `;
+
+export const VENUE_QUERY = gql`
+  query GetVenuesByOrganizationId($input: VenuesByOrganizationIdInput!) {
+    venuesByOrganizationId(input: $input) {
+      id
       name
       description
-      imageUrl
-      organization {
-        _id
+      capacity
+      createdAt
+      attachments {
+        mimeType
+        url
       }
     }
   }

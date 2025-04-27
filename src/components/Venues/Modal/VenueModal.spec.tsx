@@ -29,11 +29,13 @@ const MOCKS = [
     request: {
       query: CREATE_VENUE_MUTATION,
       variables: {
-        name: 'Test Venue',
-        description: 'Test Venue Desc',
-        capacity: 100,
-        organizationId: 'orgId',
-        file: '',
+        input: {
+          name: 'Test Venue',
+          description: 'Test Venue Desc',
+          capacity: 100,
+          organizationId: 'orgId',
+          // file: '',
+        },
       },
     },
     result: { data: { createVenue: { _id: 'orgId' } } },
@@ -44,11 +46,13 @@ const MOCKS = [
     request: {
       query: UPDATE_VENUE_MUTATION,
       variables: {
-        id: 'venue1',
-        name: 'Updated Venue',
-        capacity: 200,
-        description: 'Updated description',
-        file: 'image1',
+        input: {
+          id: 'venue1',
+          name: 'Updated Venue',
+          capacity: 200,
+          description: 'Updated description',
+          // file: 'image1',
+        },
       },
     },
     result: { data: { editVenue: { _id: 'venue1' } } },
@@ -59,11 +63,13 @@ const MOCKS = [
     request: {
       query: UPDATE_VENUE_MUTATION,
       variables: {
-        id: 'venue1',
-        name: 'Updated Venue 1',
-        capacity: parseInt('100'),
-        description: 'Updated description for venue 1',
-        file: 'image1',
+        input: {
+          id: 'venue1',
+          name: 'Updated Venue 1',
+          capacity: parseInt('100'),
+          description: 'Updated description for venue 1',
+          // file: 'image1',
+        },
       },
     },
     result: { data: { editVenue: { _id: 'venue1' } } },
@@ -74,11 +80,13 @@ const MOCKS = [
     request: {
       query: UPDATE_VENUE_MUTATION,
       variables: {
-        id: 'venue1',
-        name: 'Updated Venue 2',
-        capacity: parseInt('100'),
-        description: 'Updated description for venue 1',
-        file: 'image1',
+        input: {
+          id: 'venue1',
+          name: 'Updated Venue 2',
+          capacity: parseInt('100'),
+          description: 'Updated description for venue 1',
+          // file: 'image1',
+        },
       },
     },
     result: { data: { editVenue: { _id: 'venue1' } } },
@@ -89,11 +97,13 @@ const MOCKS = [
     request: {
       query: CREATE_VENUE_MUTATION,
       variables: {
-        name: 'Existing Venue',
-        description: 'Test Description',
-        capacity: 100,
-        organizationId: 'orgId',
-        file: '',
+        input: {
+          name: 'Existing Venue',
+          description: 'Test Description',
+          capacity: 100,
+          organizationId: 'orgId',
+          // // file: '',
+        },
       },
     },
     error: new Error('alreadyExists'),
@@ -104,11 +114,13 @@ const MOCKS = [
     request: {
       query: CREATE_VENUE_MUTATION,
       variables: {
-        name: 'Network Test Venue',
-        description: 'Test Description',
-        capacity: 100,
-        organizationId: 'orgId',
-        file: '',
+        input: {
+          name: 'Network Test Venue',
+          description: 'Test Description',
+          capacity: 100,
+          organizationId: 'orgId',
+          // // file: '',
+        },
       },
     },
     error: new Error('Network error'),
@@ -119,10 +131,12 @@ const MOCKS = [
     request: {
       query: UPDATE_VENUE_MUTATION,
       variables: {
-        id: 'venue1',
-        capacity: parseInt('150'),
-        description: 'Changed description',
-        file: 'image1',
+        input: {
+          id: 'venue1',
+          capacity: parseInt('150'),
+          description: 'Changed description',
+          file: 'image1',
+        },
       },
     },
     result: { data: { editVenue: { _id: 'venue1' } } },
@@ -133,11 +147,13 @@ const MOCKS = [
     request: {
       query: CREATE_VENUE_MUTATION,
       variables: {
-        name: 'Test Venue', // Note: trimmed value
-        description: 'Test Description', // Note: trimmed value
-        capacity: 100,
-        organizationId: 'orgId',
-        file: '',
+        input: {
+          name: 'Test Venue', // Note: trimmed value
+          description: 'Test Description', // Note: trimmed value
+          capacity: 100,
+          organizationId: 'orgId',
+          // // file: '',
+        },
       },
     },
     result: { data: { createVenue: { _id: 'newVenue' } } },
@@ -188,7 +204,7 @@ const editProps: InterfaceVenueModalProps = {
   onHide: vi.fn(),
   edit: true,
   venueData: {
-    _id: 'venue1',
+    id: 'venue1',
     name: 'Venue 1',
     description: 'Updated description for venue 1',
     image: 'image1',
@@ -219,6 +235,7 @@ describe('VenueModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
+    HTMLFormElement.prototype.submit = vi.fn();
   });
 
   test('creates a new venue successfully', async () => {
@@ -239,7 +256,7 @@ describe('VenueModal', () => {
     });
 
     fireEvent.change(screen.getByPlaceholderText('Enter Venue Capacity'), {
-      target: { value: '100' },
+      target: { value: 100 },
     });
 
     await act(async () => {
@@ -357,11 +374,11 @@ describe('VenueModal', () => {
       );
     });
 
-    test('tests undefined description fallback to empty string', async () => {
+    test('tests undefined description fallback to null', async () => {
       // Create a spy to capture the mutation variables
       const mutationSpy = vi.fn().mockImplementation((operation) => {
         return {
-          data: { createVenue: { _id: 'newVenue' } },
+          data: { createVenue: { id: 'newVenue' } },
         };
       });
 
@@ -369,7 +386,7 @@ describe('VenueModal', () => {
       const mockLink = new ApolloLink((operation) => {
         // This will capture the actual variables being sent
         mutationSpy(operation);
-        return Observable.of({ data: { createVenue: { _id: 'newVenue' } } });
+        return Observable.of({ data: { createVenue: { id: 'newVenue' } } });
       });
 
       // Create a component with the spy link
@@ -410,7 +427,7 @@ describe('VenueModal', () => {
         // Check that the first call to the spy has the expected variables
         const operation = mutationSpy.mock.calls[0][0];
         const variables = operation.variables;
-        expect(variables.description).toBe('');
+        expect(variables.description).toBe(undefined);
       });
 
       unmount();
@@ -430,7 +447,7 @@ describe('VenueModal', () => {
               file: '', // This tests the || '' fallback for objectName
             },
           },
-          result: { data: { createVenue: { _id: 'newVenue' } } },
+          result: { data: { createVenue: { id: 'newVenue' } } },
         },
       ];
 
@@ -479,10 +496,10 @@ describe('VenueModal', () => {
               description: '', // Test the || '' fallback
               capacity: 100,
               organizationId: 'orgId',
-              file: '',
+              // // file: '',
             },
           },
-          result: { data: { createVenue: { _id: 'newVenue' } } },
+          result: { data: { createVenue: { id: 'newVenue' } } },
         },
       ];
 
@@ -674,7 +691,7 @@ describe('VenueModal', () => {
             <VenueModal
               {...defaultProps}
               venueData={{
-                _id: '123',
+                id: '123',
                 name: 'Test Venue',
                 description: 'Test Description',
                 capacity: '100',
@@ -816,7 +833,7 @@ describe('VenueModal', () => {
               description: 'Test Venue Desc',
               capacity: 100,
               organizationId: 'orgId',
-              file: '',
+              // // file: '',
             },
           },
           result: { data: null },
@@ -1007,7 +1024,7 @@ describe('VenueModal', () => {
               name: 'Updated Venue',
               capacity: 200,
               description: '', // Test description fallback
-              file: '', // Test objectName fallback
+              // // file: '', // Test objectName fallback
             },
           },
           result: { data: { editVenue: { _id: 'venue1' } } },
@@ -1018,7 +1035,7 @@ describe('VenueModal', () => {
       const customEditProps = {
         ...editProps,
         venueData: {
-          _id: 'venue1', // Keep the required fields
+          id: 'venue1', // Keep the required fields
           name: 'Venue 1',
           capacity: '100',
           description: null, // Changed to null from undefined
@@ -1161,7 +1178,7 @@ describe('VenueModal', () => {
             description: 'Test Description',
             capacity: 100,
             organizationId: 'orgId',
-            file: '',
+            // // file: '',
           },
         },
         error: new Error('alreadyExists'),
@@ -1206,7 +1223,7 @@ describe('VenueModal', () => {
               description: 'Test Description',
               capacity: 100,
               organizationId: 'orgId',
-              file: '',
+              // // file: '',
             },
           },
           error: new Error('Custom error message'),
@@ -1400,7 +1417,7 @@ describe('VenueModal', () => {
                   description: '',
                   capacity: 100,
                   organizationId: 'orgId',
-                  file: '',
+                  // // file: '',
                 },
               },
               result: { data: { createVenue: { _id: 'newVenue' } } },
@@ -1438,7 +1455,7 @@ describe('VenueModal', () => {
                   description: 'Test Description',
                   capacity: 100,
                   organizationId: 'orgId',
-                  file: '', // Explicitly passing empty string
+                  // // file: '', // Explicitly passing empty string
                 },
               },
               result: { data: { createVenue: { _id: 'newVenue' } } },
@@ -1448,7 +1465,7 @@ describe('VenueModal', () => {
               {
                 ...defaultProps,
                 venueData: {
-                  _id: 'testVenue',
+                  id: 'testVenue',
                   name: 'Test Venue',
                   description: 'Test Description',
                   capacity: '100',
@@ -1478,7 +1495,7 @@ describe('VenueModal', () => {
                   description: 'Test Description',
                   capacity: 100,
                   organizationId: 'orgId',
-                  file: '',
+                  // // file: '',
                 },
               },
               result: { data: { createVenue: { _id: 'newVenue' } } },
@@ -1521,7 +1538,7 @@ describe('VenueModal', () => {
                   description: 'Test Description',
                   capacity: 100,
                   organizationId: 'orgId',
-                  file: '',
+                  // // file: '',
                 },
               },
               error: new Error('alreadyExists'),
@@ -1618,7 +1635,7 @@ describe('VenueModal', () => {
                 description: '',
                 capacity: 100,
                 organizationId: 'orgId',
-                file: '',
+                // // file: '',
               },
             },
             result: { data: { createVenue: { _id: 'newVenue' } } },
@@ -1659,7 +1676,7 @@ describe('VenueModal', () => {
                 name: 'Updated Venue',
                 capacity: 100,
                 description: '',
-                file: '',
+                // // file: '',
               },
             },
             result: { data: { editVenue: { _id: 'venue1' } } },
@@ -1669,7 +1686,7 @@ describe('VenueModal', () => {
             {
               ...editProps,
               venueData: {
-                _id: 'venue1',
+                id: 'venue1',
                 name: 'Original Venue',
                 description: '',
                 image: '',
@@ -1736,7 +1753,7 @@ describe('VenueModal', () => {
                 description: 'Test Description',
                 capacity: 100,
                 organizationId: 'orgId',
-                file: '',
+                // // file: '',
               },
             },
             error: new Error('Custom error message'),

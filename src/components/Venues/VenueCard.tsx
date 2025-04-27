@@ -57,7 +57,7 @@ const VenueCard = ({
     <div
       className="col-xl-4 col-lg-4 col-md-6"
       data-testid={`venue-item${index + 1}`}
-      key={venueItem._id}
+      key={venueItem.id}
     >
       <div className={styles.cards} data-testid="cardStructure">
         <Card className={styles.card}>
@@ -107,7 +107,7 @@ const VenueCard = ({
             <Button
               size="sm"
               data-testid={`deleteVenueBtn${index + 1}`}
-              onClick={() => handleDelete(venueItem._id)}
+              onClick={() => handleDelete(venueItem.id)}
               className={`btn btn-danger ${styles.removeButton}`}
             >
               <i className="fa fa-trash me-2"></i>

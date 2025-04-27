@@ -10,24 +10,96 @@ import gql from 'graphql-tag';
  * @param organizationId - Organization to which the ActionItemCategory belongs.
  */
 
+// export const CREATE_VENUE_MUTATION = gql`
+//   mutation createVenue(
+//     $capacity: Int!
+//     $description: String
+//     $file: String
+//     $name: String!
+//     $organizationId: ID!
+//   ) {
+//     createVenue(
+//       data: {
+//         capacity: $capacity
+//         description: $description
+//         file: $file
+//         name: $name
+//         organizationId: $organizationId
+//       }
+//     ) {
+//       _id
+//     }
+//   }
+// `;
+
+// mutation CreateVenue($input: MutationCreateVenueInput!) {
+//  const MutationCreateVenueInput = {
+//   name: String!,
+//   description: String,
+//   file: String,
+//   organizationId: ID!,
+//   capacity: Int!,
+// }
+
+// export const CREATE_VENUE_MUTATION = gql`
+//   mutation CreateVenue(
+//   $name: String!,
+//   $description: String,
+//   $organizationId: ID!,
+//   $capacity: Int!,
+//   ){
+//     createVenue(input: $input) {
+
+//       id
+//       name
+//       description
+//       capacity
+
+//       organization {
+//         id
+//         name
+//       }
+//       attachments {
+//         mimeType
+//         url
+//       }
+//       createdAt
+//       updatedAt
+//     }
+//   }
+// `;
+
+// ye sahi hai
+// export const CREATE_VENUE_MUTATION = gql`
+//   mutation CreateVenue($input: MutationCreateVenueInput!) {
+//     createVenue(input: $input) {
+//       id
+//       name
+//       description
+//       organization {
+//         id
+//       }
+//       createdAt
+//       updatedAt
+//     }
+//   }
+// `;
+
 export const CREATE_VENUE_MUTATION = gql`
-  mutation createVenue(
-    $capacity: Int!
-    $description: String
-    $file: String
-    $name: String!
-    $organizationId: ID!
-  ) {
-    createVenue(
-      data: {
-        capacity: $capacity
-        description: $description
-        file: $file
-        name: $name
-        organizationId: $organizationId
+  mutation CreateVenue($input: MutationCreateVenueInput!) {
+    createVenue(input: $input) {
+      id
+      name
+      description
+      organization {
+        id
       }
-    ) {
-      _id
+      createdAt
+      updatedAt
+      attachments {
+        mimeType
+        name
+      }
     }
   }
 `;
@@ -43,23 +115,16 @@ export const CREATE_VENUE_MUTATION = gql`
  */
 
 export const UPDATE_VENUE_MUTATION = gql`
-  mutation editVenue(
-    $capacity: Int
-    $description: String
-    $file: String
-    $id: ID!
-    $name: String
-  ) {
-    editVenue(
-      data: {
-        capacity: $capacity
-        description: $description
-        file: $file
-        id: $id
-        name: $name
+  mutation UpdateVenue($input: MutationUpdateVenueInput!) {
+    updateVenue(input: $input) {
+      id
+      name
+      description
+      updatedAt
+      capacity
+      organization {
+        id
       }
-    ) {
-      _id
     }
   }
 `;
@@ -71,9 +136,11 @@ export const UPDATE_VENUE_MUTATION = gql`
  */
 
 export const DELETE_VENUE_MUTATION = gql`
-  mutation DeleteVenue($id: ID!) {
-    deleteVenue(id: $id) {
-      _id
+  mutation DeleteVenue($input: MutationDeleteVenueInput!) {
+    deleteVenue(input: $input) {
+      id
+      name
+      description
     }
   }
 `;
